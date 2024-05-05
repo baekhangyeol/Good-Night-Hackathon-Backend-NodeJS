@@ -1,23 +1,35 @@
-import express from 'express';
-import { Sequelize } from 'sequelize';
+import express, {NextFunction} from 'express';
+import helmet from "helmet";
+import connectDB from "./database/db";
+
+require('dotenv').config();
+
+connectDB();
 
 const app = express();
-const port = 3000;
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(helmet());
 
-const sequelize = new Sequelize('hackathon', 'root', 'qorgksruf123', {
-    host: 'localhost',
-    dialect: 'mysql',
-});
+// interface ErrorType {
+//     message: string;
+//     status: number;
+// }
+//
+// app.use(function (
+//     err: ErrorType,
+//     req: Request,
+//     res: Response,
+//     next: NextFunction
+// ) {
+//     res.locals.message = err.message;
+//     res.locals.error = req.app.get('env') === 'production' ? err : {};
+//
+//     // render the error page
+//     res.status(err.status || 500);
+//     res.render('error');
+// });
 
-app.get('/', async (req, res) => {
-    try {
-        await sequelize.authenticate();
-        res.send('Connection has been established successfully.');
-    } catch (error) {
-        res.send(`Unable to connect to the database: ${error}`);
-    }
-});
-
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+app.listen(3000, () => {
+    console.log(`Server is running on port 3000`);
 })

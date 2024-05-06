@@ -3,28 +3,52 @@ import { IMovie } from '../types/movie';
 import { MovieService } from '../services/MovieService';
 
 export class MovieController {
-    public static async registerMovie(req: Request, res: Response) {
-        const { title, genre, releaseDate, endDate, isShowing } = req.body;
+    private movieService: MovieService;
 
-        if (!title || !genre || !releaseDate || !endDate || isShowing === undefined) {
-            return res.status(400).json({ message: "모든 항목은 필수값입니다!" });
-        }
+    constructor() {
+        this.movieService = new MovieService();
+    }
 
-        const validGenres = ['Thriller', 'Romance', 'Comedy', 'Action'];
-        if (!validGenres.includes(genre)) {
-            return res.status(400).json({ message: "잘못된 장르" });
-        }
-
-        const movieData: IMovie = {
-            title, genre, releaseDate: new Date(releaseDate), endDate: new Date(endDate),
-            isShowing: true
-        };
-
+    public async registerMovie(req: Request, res: Response): Promise<void> {
         try {
-            const movie = await MovieService.createMovie(movieData);
+            this.validateMovieData(req.body);
+            const movieData: IMovie = this.mapToMovieDto(req.body);
+            const movie = await this.movieService.createMovie(movieData);
             res.status(201).json(movie);
         } catch (error) {
-            res.status(500).json({ message: "Failed to register movie", error: error.message });
+            res.status(400).json({ message: error.message });
         }
+    }
+
+    public async deleteMovie(req: Request, res: Response): Promise<void> {
+        try {
+            const id = parseInt(req.params.id);
+            if (isNaN(id)) throw new Error("Invalid movie ID");
+            await this.movieService.deleteMovie(id);
+            res.status(204).send();
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    private validateMovieData(data: any): void {
+        const { title, genre, releaseDate, endDate, isShowing } = data;
+        if (!title || !genre || !releaseDate || !endDate || isShowing === undefined) {
+            throw new Error("All fields are required");
+        }
+        const validGenres = ['Thriller', 'Romance', 'Comedy', 'Action'];
+        if (!validGenres.includes(genre)) {
+            throw new Error("Invalid genre");
+        }
+    }
+
+    private mapToMovieDto(data: any): IMovie {
+        return {
+            title: data.title,
+            genre: data.genre,
+            releaseDate: new Date(data.releaseDate),
+            endDate: new Date(data.endDate),
+            isShowing: data.isShowing
+        };
     }
 }

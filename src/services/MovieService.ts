@@ -1,21 +1,28 @@
-import { getRepository } from "typeorm";
+import { Repository } from "typeorm";
 import { Movie } from "../entity/Movie";
 import { IMovie } from "../types/movie";
 import { dataSource } from "..";
 
 export class MovieService {
-    public static async createMovie(movieData: IMovie): Promise<Movie> {
-        const movieRepository = dataSource.getRepository(Movie);
+    private get movieRepository(): Repository<Movie> {
+        return dataSource.getRepository(Movie);
+    }
 
-        const movie = new Movie(
-            movieData.title,
-            movieData.genre,
-            movieData.releaseDate,
-            movieData.endDate,
-            movieData.isShowing
-        );
+    public async createMovie(movieData: IMovie): Promise<Movie> {
+        try {
+            const movie = this.movieRepository.create(movieData);
+            await this.movieRepository.save(movie);
+            return movie;
+        } catch (error) {
+            throw new Error("Failed to create movie: " + error.message);
+        }
+    }
 
-        await movieRepository.save(movie);
-        return movie;
+    public async deleteMovie(id: number): Promise<void> {
+        try {
+            await this.movieRepository.softDelete(id);
+        } catch (error) {
+            throw new Error("Failed to delete movie: " + error.message);
+        }
     }
 }

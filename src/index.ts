@@ -2,6 +2,7 @@ import express, {NextFunction} from 'express';
 import helmet from "helmet";
 import movieRouter from './routers/movieRoutes';
 import { DataSource } from 'typeorm';
+import reviewRouter from './routers/reviewRoutes';
 
 require('dotenv').config();
 
@@ -39,6 +40,7 @@ app.use(express.json());
 app.use(helmet());
 
 app.use('/api/v1/movies', movieRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 
 app.listen(3000, () => {

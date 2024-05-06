@@ -31,6 +31,17 @@ export class MovieController {
         }
     }
 
+    public async getMovie(req: Request, res: Response): Promise<void> {
+        try {
+            const id = parseInt(req.params.id);
+            if (isNaN(id)) throw new Error("Invalid movie ID");
+            const movie = await this.movieService.getMovie(id);
+            res.status(200).json(movie);
+        } catch (error) {
+            res.status(404).json({ message: error.message });
+        }
+    }
+
     private validateMovieData(data: any): void {
         const { title, genre, releaseDate, endDate, isShowing } = data;
         if (!title || !genre || !releaseDate || !endDate || isShowing === undefined) {

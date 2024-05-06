@@ -25,4 +25,14 @@ export class MovieService {
             throw new Error("Failed to delete movie: " + error.message);
         }
     }
+
+    public async getMovie(id: number): Promise<Movie> {
+        try {
+            const movie = await this.movieRepository.findOneBy({ id });
+            if (!movie) throw new Error("Movie not found");
+            return movie;
+        } catch (error) {
+            throw new Error("Failed to get movie: " + error.message);
+        }
+    }
 }

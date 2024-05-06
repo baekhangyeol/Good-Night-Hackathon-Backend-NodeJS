@@ -57,11 +57,12 @@ export class MovieController {
 
     public async getMovies(req: Request, res: Response): Promise<void> {
         try {
-            const { genre, isShowing } = req.query;
-            const isShowingBool = isShowing ? isShowing === 'true' : undefined;
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const minRating = parseFloat(req.query.min_rating as string);
 
-            const movies = await this.movieService.getMovies(genre as string, isShowingBool);
-            res.status(200).json(movies);
+            const result = await this.movieService.getMoviesWithRatings(page, limit, minRating);
+            res.status(200).json(result);
         } catch (error) {
             res.status(500).json({ message: error.message });
         }

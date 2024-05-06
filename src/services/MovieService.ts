@@ -67,4 +67,32 @@ export class MovieService {
             throw new Error("Failed to get movies: " + error.message);
         }
     }
+
+    public async getMoviesWithRatings(page: number, limit: number, minRating?: number): Promise<any> {
+        try {
+            const query = this.movieRepository.createQueryBuilder("movie")
+                .leftJoinAndSelect("movie.reviews", "review")
+                .select("movie.id", "id")
+                .addSelect("movie.title", "title")
+                .addSelect("movie.genre", "genre")
+                .addSelect("movie.releaseDate", "releaseDate")
+                .addSelect("movie.endDate", "endDate")
+                .addSelect("movie.isShowing", "isShowing")
+                .addSelect("AVG(review.rating)", "averageRating")
+                .groupBy("movie.id")
+                .orderBy("averageRating", "DESC")
+                .offset((page - 1) * limit)
+                .limit(limit);
+            
+            if (minRating) {
+                query.having("averageRating >= :minRating", { minRating });
+            }
+
+            const [result, total] = await query.getRawMany();
+
+            return { data: result, total, page, limit };
+        } catch (error) {
+            throw new Error("Failed to get movies with ratings: " + error.message);
+        }
+    }
 }

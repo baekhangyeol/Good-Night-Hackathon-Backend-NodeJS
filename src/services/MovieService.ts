@@ -35,4 +35,15 @@ export class MovieService {
             throw new Error("Failed to get movie: " + error.message);
         }
     }
+
+    public async updateMovie(id: number, movieData: IMovie): Promise<Movie> {
+        try {
+            const movie = await this.getMovie(id);
+            this.movieRepository.merge(movie, movieData);
+            await this.movieRepository.save(movie);
+            return movie;
+        } catch (error) {
+            throw new Error("Failed to update movie: " + error.message);
+        }
+    }
 }

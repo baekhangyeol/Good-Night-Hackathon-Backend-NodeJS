@@ -32,7 +32,8 @@ export class ReviewController {
                 throw new Error("Invalid movie ID");
             }
 
-            const reviews = await this.reviewService.getReviews(movieId);
+            const minRating = parseFloat(req.query.min_rating as string);
+            const reviews = await this.reviewService.getReviews(movieId, minRating);
             res.status(200).json(reviews);
         } catch (error) {
             res.status(404).json({ message: error.message });

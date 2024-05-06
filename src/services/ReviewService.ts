@@ -22,12 +22,17 @@ export class ReviewService {
         }
     }
 
-    public async getReviews(movieId: number): Promise<Review[]> {
+    public async getReviews(movieId: number, minRating?: number): Promise<Review[]> {
         try {
-            const reviews = await this.reviewRepository.createQueryBuilder("review")
+            const query = this.reviewRepository.createQueryBuilder("review")
                 .where("review.movieId = :movieId", { movieId })
-                .getMany();
-            return reviews;
+                .orderBy("review.createdAt", "DESC");
+            
+            if (minRating) {
+                query.andWhere("review.rating >= :minRating", { minRating });
+            }
+
+            return await query.getMany();
         } catch (error) {
             throw new Error("Failed to get reviews: " + error.message);
         }

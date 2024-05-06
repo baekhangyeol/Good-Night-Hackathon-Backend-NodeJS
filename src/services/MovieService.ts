@@ -46,4 +46,25 @@ export class MovieService {
             throw new Error("Failed to update movie: " + error.message);
         }
     }
+
+    public async getMovies(genre?: string, isShowing?: boolean): Promise<Movie[]> {
+        try {
+            const query = this.movieRepository.createQueryBuilder("movie")
+                .where("movie.deletedAt IS NULL");
+            
+            if (genre) {
+                query.andWhere("movie.genre = :genre", { genre });
+            }
+
+            if(isShowing !== undefined) {
+                query.andWhere("movie.isShowing = :isShowing", { isShowing });
+            }
+
+            query.orderBy("movie.releaseDate", "ASC");
+
+            return await query.getMany();
+        } catch (error) {
+            throw new Error("Failed to get movies: " + error.message);
+        }
+    }
 }

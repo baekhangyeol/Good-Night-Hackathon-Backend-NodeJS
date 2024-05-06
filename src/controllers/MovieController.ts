@@ -55,6 +55,18 @@ export class MovieController {
         }
     }
 
+    public async getMovies(req: Request, res: Response): Promise<void> {
+        try {
+            const { genre, isShowing } = req.query;
+            const isShowingBool = isShowing ? isShowing === 'true' : undefined;
+
+            const movies = await this.movieService.getMovies(genre as string, isShowingBool);
+            res.status(200).json(movies);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
     private validateMovieData(data: any): void {
         const { title, genre, releaseDate, endDate, isShowing } = data;
         if (!title || !genre || !releaseDate || !endDate || isShowing === undefined) {

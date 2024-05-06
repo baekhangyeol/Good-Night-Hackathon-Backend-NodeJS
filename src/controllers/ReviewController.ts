@@ -25,6 +25,20 @@ export class ReviewController {
         }
     }
 
+    public async getReviews(req: Request, res: Response): Promise<void> {
+        try {
+            const movieId = parseInt(req.params.movie_id);
+            if (isNaN(movieId)) {
+                throw new Error("Invalid movie ID");
+            }
+
+            const reviews = await this.reviewService.getReviews(movieId);
+            res.status(200).json(reviews);
+        } catch (error) {
+            res.status(404).json({ message: error.message });
+        }
+    }
+
     private validateReviewData(data: any): void {
         if (!data.rating || !data.content) {
             throw new Error("Rating and content are required");

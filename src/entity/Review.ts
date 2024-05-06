@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Movie } from "./Movie";
 
 @Entity()
@@ -12,6 +12,7 @@ export class Review {
     @Column()
     content: string;
 
-    @ManyToOne(() => Movie)
+    @ManyToOne(() => Movie, movie => movie.reviews)
+    @JoinColumn({ name: 'movieId' })
     movie: Movie;
 }

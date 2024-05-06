@@ -4,7 +4,7 @@ export interface IReview {
     id?: number;
     rating: number;
     content: string;
-    movieId: number;  // This replaces the movie object
+    movieId: number;
     createdAt?: Date;
     updatedAt?: Date;
 }

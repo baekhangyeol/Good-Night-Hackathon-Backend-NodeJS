@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, getRepository } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, getRepository } from "typeorm";
+import { Review } from "./Review";
 
 @Entity()
 export class Movie {
@@ -31,6 +32,9 @@ export class Movie {
 
     @DeleteDateColumn()
     deletedAt: Date;
+
+    @OneToMany(() => Review, review => review.movie)
+    reviews: Review[];
 
     constructor(title: string, genre: string, releaseDate: Date, endDate: Date, isShowing: boolean) {
         this.title = title;

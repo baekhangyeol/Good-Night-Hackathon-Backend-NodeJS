@@ -1,17 +1,20 @@
 import { Request, Response } from 'express';
 import { IMovie } from '../types/movie';
 import { MovieService } from '../services/MovieService';
+import MovieVerify from '../middleware/verify/movieVerify';
 
 export class MovieController {
     private movieService: MovieService;
+    private movieVerify: MovieVerify;
 
     constructor() {
         this.movieService = new MovieService();
+        this.movieVerify = new MovieVerify();
     }
 
     public async registerMovie(req: Request, res: Response): Promise<void> {
         try {
-            this.validateMovieData(req.body);
+            this.movieVerify.validateMovieData(req.body);
             const movieData: IMovie = this.mapToMovieDto(req.body);
             const movie = await this.movieService.createMovie(movieData);
             res.status(201).json(movie);
@@ -46,7 +49,7 @@ export class MovieController {
         try {
             const id = parseInt(req.params.id);
             if (isNaN(id)) throw new Error("Invalid movie ID");
-            this.validateMovieData(req.body);
+            this.movieVerify.validateMovieData(req.body);
             const movieData: IMovie = this.mapToMovieDto(req.body);
             const movie = await this.movieService.updateMovie(id, movieData);
             res.status(200).json(movie);
@@ -65,17 +68,6 @@ export class MovieController {
             res.status(200).json(result);
         } catch (error) {
             res.status(500).json({ message: error.message });
-        }
-    }
-
-    private validateMovieData(data: any): void {
-        const { title, genre, releaseDate, endDate, isShowing } = data;
-        if (!title || !genre || !releaseDate || !endDate || isShowing === undefined) {
-            throw new Error("All fields are required");
-        }
-        const validGenres = ['Thriller', 'Romance', 'Comedy', 'Action'];
-        if (!validGenres.includes(genre)) {
-            throw new Error("Invalid genre");
         }
     }
 

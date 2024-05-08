@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { ReviewService } from "../services/ReviewService";
 import { IReview } from "../types/review";
+import ReviewVerify from "../middleware/verify/reviewVerify";
 
 export class ReviewController {
     private reviewService: ReviewService;
+    private reviewVerify: ReviewVerify;
 
     constructor() {
         this.reviewService = new ReviewService();
@@ -16,7 +18,7 @@ export class ReviewController {
                 throw new Error("Invalid movie ID");
             }
 
-            this.validateReviewData(req.body);
+            this.reviewVerify.validateReviewData(req.body);
             const reviewData: IReview = this.mapToReviewDto(req.body, movieId);
             const review = await this.reviewService.addReview(reviewData);
             res.status(201).json(review);
@@ -37,12 +39,6 @@ export class ReviewController {
             res.status(200).json(reviews);
         } catch (error) {
             res.status(404).json({ message: error.message });
-        }
-    }
-
-    private validateReviewData(data: any): void {
-        if (!data.rating || !data.content) {
-            throw new Error("Rating and content are required");
         }
     }
 

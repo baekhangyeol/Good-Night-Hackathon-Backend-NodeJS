@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ReviewService } from "../services/ReviewService";
-import { IReview } from "../types/review";
+import { IReview, mapToReviewDTO } from "../types/review";
 import ReviewVerify from "../middleware/verify/reviewVerify";
 
 export class ReviewController {
@@ -19,7 +19,7 @@ export class ReviewController {
             }
 
             this.reviewVerify.validateReviewData(req.body);
-            const reviewData: IReview = this.mapToReviewDto(req.body, movieId);
+            const reviewData: IReview = mapToReviewDTO(req.body, movieId);
             const review = await this.reviewService.addReview(reviewData);
             res.status(201).json(review);
         } catch (error) {
@@ -40,13 +40,5 @@ export class ReviewController {
         } catch (error) {
             res.status(404).json({ message: error.message });
         }
-    }
-
-    private mapToReviewDto(data: any, movieId: number): IReview {
-        return {
-            rating: data.rating,
-            content: data.content,
-            movieId: movieId
-        };
     }
 }

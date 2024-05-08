@@ -5,3 +5,13 @@ export interface IMovie {
     endDate: Date;
     isShowing: boolean;
 }
+
+export function mapToMovieDTO(data: any): IMovie {
+    return {
+        title: data.title,
+        genre: data.genre,
+        releaseDate: data.releaseDate,
+        endDate: data.endDate,
+        isShowing: data.isShowing
+    };
+}

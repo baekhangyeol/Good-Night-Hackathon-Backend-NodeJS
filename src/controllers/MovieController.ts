@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IMovie } from '../types/movie';
+import { IMovie, mapToMovieDTO } from '../types/movie';
 import { MovieService } from '../services/MovieService';
 import MovieVerify from '../middleware/verify/movieVerify';
 
@@ -15,7 +15,7 @@ export class MovieController {
     public async registerMovie(req: Request, res: Response): Promise<void> {
         try {
             this.movieVerify.validateMovieData(req.body);
-            const movieData: IMovie = this.mapToMovieDto(req.body);
+            const movieData: IMovie = mapToMovieDTO(req.body);
             const movie = await this.movieService.createMovie(movieData);
             res.status(201).json(movie);
         } catch (error) {
@@ -50,7 +50,7 @@ export class MovieController {
             const id = parseInt(req.params.id);
             if (isNaN(id)) throw new Error("Invalid movie ID");
             this.movieVerify.validateMovieData(req.body);
-            const movieData: IMovie = this.mapToMovieDto(req.body);
+            const movieData: IMovie = mapToMovieDTO(req.body);
             const movie = await this.movieService.updateMovie(id, movieData);
             res.status(200).json(movie);
         } catch (error) {
@@ -69,15 +69,5 @@ export class MovieController {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
-
-    private mapToMovieDto(data: any): IMovie {
-        return {
-            title: data.title,
-            genre: data.genre,
-            releaseDate: new Date(data.releaseDate),
-            endDate: new Date(data.endDate),
-            isShowing: data.isShowing
-        };
     }
 }

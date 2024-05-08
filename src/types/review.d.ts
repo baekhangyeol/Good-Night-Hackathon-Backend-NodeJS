@@ -8,3 +8,11 @@ export interface IReview {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export function mapToReviewDTO(data: any, movieId: number): IReview {
+    return {
+        rating: data.rating,
+        content: data.content,
+        movieId
+    };
+}

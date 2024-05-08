@@ -7,19 +7,16 @@ export class ReviewController {
     private reviewService: ReviewService;
     private reviewVerify: ReviewVerify;
 
-    constructor() {
-        this.reviewService = new ReviewService();
+    constructor(reviewService: ReviewService, reviewVerify: ReviewVerify) {
+        this.reviewService = reviewService;
+        this.reviewVerify = reviewVerify;
     }
 
     public async addReview(req: Request, res: Response): Promise<void> {
         try {
             const movieId = parseInt(req.params.movie_id);
-            if (isNaN(movieId)) {
-                throw new Error("Invalid movie ID");
-            }
-
             this.reviewVerify.validateReviewData(req.body);
-            const reviewData: IReview = mapToReviewDTO(req.body, movieId);
+            const reviewData = mapToReviewDTO(req.body, movieId);
             const review = await this.reviewService.addReview(reviewData);
             res.status(201).json(review);
         } catch (error) {
@@ -30,10 +27,6 @@ export class ReviewController {
     public async getReviews(req: Request, res: Response): Promise<void> {
         try {
             const movieId = parseInt(req.params.movie_id);
-            if (isNaN(movieId)) {
-                throw new Error("Invalid movie ID");
-            }
-
             const minRating = parseFloat(req.query.min_rating as string);
             const reviews = await this.reviewService.getReviews(movieId, minRating);
             res.status(200).json(reviews);

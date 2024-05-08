@@ -10,4 +10,6 @@ movieRouter.get('/:id', (req, res) => movieController.getMovie(req, res));
 movieRouter.put('/:id', (req, res) => movieController.updateMovie(req, res));
 movieRouter.get('/', (req, res) => movieController.getMovies(req, res));
 
+movieRouter.use(errorHandler);
+
 export default movieRouter;
